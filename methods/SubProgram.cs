@@ -297,4 +297,88 @@ public class SubProgramma{
 
         return item;
     }
+
+
+    public static void PostEvent(string onderwerp, string body, misc.Availability gekozenTijdstip){
+
+        while(true){
+            Console.WriteLine("Uitnodiging versturen? y/n");
+            var ans = Console.ReadLine();
+            if(ans == "y" || ans == "n"){
+                if(ans == "y"){
+                    var online = true;
+
+                    var locatie = "";
+                    while(true){
+                        Console.WriteLine("Meeting online? y/n");
+                        var ans2 = Console.ReadLine();
+                        if(ans2 == "y" || ans2 == "n"){
+                            if(ans2 == "y"){
+                                locatie = "Online";
+                                online = true;
+                            }
+                            else{
+                                online = false;
+                                while(true){
+                                    Console.WriteLine("Op welke locatie vind de meeting plaats?");
+                                    var ans3 = Console.ReadLine();
+                                    if(ans3 != "" && ans3 != null){
+                                        locatie = ans3;
+                                        break;
+                                    }
+                                    else{
+                                        Console.WriteLine("Voer een antwoord in");
+                                    }
+                                }
+
+                                    Console.WriteLine("Hoe lang is de Reistijd? uu:mm");
+                                    var reistijd = Console.ReadLine();
+                                
+                                
+                            }
+                            break;
+                        }
+                        else{
+                            Console.WriteLine("Voer een geldig antwoord in");
+                        }
+                    }
+                    
+                    
+                    //Data formatteren voor Outlook API
+                    
+                    var pItem = SubProgramma.PItem(gekozenTijdstip, onderwerp, body, online, locatie);
+                    var postEvent = OutlookAPI.PostEvent(pItem);
+                    if(postEvent == null){
+                        Console.WriteLine("Onbekende fout, probeer later opnieuw.");
+                    }
+                    else{
+                        Console.WriteLine("Afspraak gemaakt");
+                        Console.WriteLine("Onderwerp: " + postEvent.subject);
+                        Console.Write("Uitgenodigden: " );
+                        foreach(var ev in postEvent.attendees){
+                            Console.Write(ev.emailAddress.address);
+                            if(ev != postEvent.attendees.Last()){
+                                Console.Write(" + ");
+                            }
+                            else{
+                                Console.WriteLine("");
+                            }
+                        }
+                        Console.WriteLine("Locatie: " + postEvent.location.displayName);
+                        Console.WriteLine("Startdatum: " + postEvent.start.dateTime);
+                        Console.WriteLine("Einddatum: " + postEvent.end.dateTime);
+                        Console.ReadLine();
+                    }
+                }
+                else{
+                    Console.WriteLine("Uitnodiging word niet verstuurd.");
+                }
+                break;
+            }
+            else{
+                Console.WriteLine("Voer een geldig antwoord in");
+            }
+        }
+
+    }
 }
