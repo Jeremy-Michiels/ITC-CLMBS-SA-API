@@ -36,3 +36,4 @@ C:\Users\jerem\OneDrive\Bureaublad\School\Stage\2024\Code\ITC-CLMBS-SA-API\obj\D
 C:\Users\jerem\OneDrive\Bureaublad\School\Stage\2024\Code\ITC-CLMBS-SA-API\obj\Debug\net9.0\ITC-CLMBS-SA-API.pdb
 C:\Users\jerem\OneDrive\Bureaublad\School\Stage\2024\Code\ITC-CLMBS-SA-API\obj\Debug\net9.0\ITC-CLMBS-SA-API.genruntimeconfig.cache
 C:\Users\jerem\OneDrive\Bureaublad\School\Stage\2024\Code\ITC-CLMBS-SA-API\obj\Debug\net9.0\ref\ITC-CLMBS-SA-API.dll
+C:\Users\jerem\OneDrive\Bureaublad\School\Stage\2024\Code\ITC-CLMBS-SA-API\obj\Debug\net9.0\ITC-CLMBS-SA-API.sourcelink.json

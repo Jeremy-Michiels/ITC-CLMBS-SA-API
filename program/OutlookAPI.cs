@@ -141,7 +141,7 @@ namespace Programma{
                 isOrganizer = true,
                 responseRequested = true,
                 seriesMasterId = null,
-                showAs = "busy",
+                showAs = postItem.showAs,
                 type = "singleInstance",
                 webLink = "https://outlook.office365.com/owa/?itemid=AAMkADAABIGYDZAAA%3D&exvsurl=1&path=/calendar/item",
                 onlineMeetingUrl = null,

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ITC-CLMBS-SA-API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ae55587f6e0274807009a822082dcf0fa72684e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d36a3a2b069f4108f3f6fbbad182d53123f4cf6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ITC-CLMBS-SA-API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ITC-CLMBS-SA-API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -11,5 +11,6 @@ namespace PostEvent{
         public bool allowNewTimeProposals{get;set;} = true;
         public bool isOnlineMeeting{get;set;}
         public string onlineMeetingProvider{get;set;}
+        public string showAs{get;set;}
     }
 }

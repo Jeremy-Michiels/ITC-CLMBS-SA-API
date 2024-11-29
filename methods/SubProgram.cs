@@ -260,7 +260,7 @@ public class SubProgramma{
     }
 
 
-    public static PostEvent.Post PItem(Availability meeting, string subject, string body, bool online, string location){
+    public static PostEvent.Post PItem(Availability meeting, string subject, string body, bool online, string location, string showAs){
         var item = new PostEvent.Post(){
             subject = subject,
             body = new PostEvent.BodyType(){
@@ -282,6 +282,7 @@ public class SubProgramma{
             allowNewTimeProposals = true,
             isOnlineMeeting = online,
             onlineMeetingProvider = online ? "teamsForBusiness" : null,
+            showAs = showAs
         };
 
         foreach(var at in meeting.attendees){
@@ -330,11 +331,20 @@ public class SubProgramma{
                                         Console.WriteLine("Voer een antwoord in");
                                     }
                                 }
-
-                                    Console.WriteLine("Hoe lang is de Reistijd? uu:mm");
-                                    var reistijd = Console.ReadLine();
-                                
-                                
+                                    var tijdWeg = new TimeSpan();
+                                    while(true){
+                                        Console.WriteLine("Hoe lang is de Reistijd? uu:mm");
+                                        var reistijd = Console.ReadLine();
+                                        try{
+                                            tijdWeg = TimeSpan.Parse(reistijd);
+                                            break;
+                                        }
+                                        catch{
+                                            Console.WriteLine("Voer een geldig antwoord in");
+                                        }
+                                    }
+                                    //Reistijd in agenda zetten
+                                    PostTravelTime(gekozenTijdstip, tijdWeg, onderwerp, body);
                             }
                             break;
                         }
@@ -345,9 +355,8 @@ public class SubProgramma{
                     
                     
                     //Data formatteren voor Outlook API
-                    
-                    var pItem = SubProgramma.PItem(gekozenTijdstip, onderwerp, body, online, locatie);
-                    var postEvent = OutlookAPI.PostEvent(pItem);
+                    var pEvent = SubProgramma.PItem(gekozenTijdstip, onderwerp, body, online, locatie, "busy");
+                    var postEvent = OutlookAPI.PostEvent(pEvent);
                     if(postEvent == null){
                         Console.WriteLine("Onbekende fout, probeer later opnieuw.");
                     }
@@ -380,5 +389,39 @@ public class SubProgramma{
             }
         }
 
+    }
+    public static void PostTravelTime(misc.Availability gekozenTijdstip, TimeSpan tijdWeg, string onderwerp, string body){
+        var voortijd = new Availability(){
+                                        datum = gekozenTijdstip.datum,
+                                        startTijd = gekozenTijdstip.startTijd - tijdWeg,
+                                        eindTijd = gekozenTijdstip.startTijd,
+                                        attendees = gekozenTijdstip.attendees,
+                                        allAvailable = gekozenTijdstip.allAvailable,
+                                        genoegTijd = gekozenTijdstip.genoegTijd,
+                                    };
+                                    var natijd = new Availability(){
+                                        datum = gekozenTijdstip.datum,
+                                        startTijd = gekozenTijdstip.eindTijd,
+                                        eindTijd = gekozenTijdstip.eindTijd + tijdWeg,
+                                        attendees = gekozenTijdstip.attendees,
+                                        allAvailable = gekozenTijdstip.allAvailable,
+                                        genoegTijd = gekozenTijdstip.genoegTijd,
+                                    };
+                                    Console.WriteLine("Heen: Onderweg van " + voortijd.startTijd + " tot " + voortijd.eindTijd);
+                                    Console.WriteLine("Terug: Onderweg van " + natijd.startTijd + " tot " + natijd.eindTijd);
+                                    Console.WriteLine("");
+                                    var ond = "Reistijd" + onderwerp;
+                                    var bod = "Reistijd" + body;
+                                    var voor = PItem(voortijd, ond, bod, false, "", "workingElsewhere");
+                                    var na = PItem(natijd, ond, bod, false, "", "workingElsewhere");
+
+                                    var pvoor = OutlookAPI.PostEvent(voor);
+                                    if(pvoor != null){
+                                        Console.WriteLine("Heenweg ingepland");
+                                    }
+                                    var pna = OutlookAPI.PostEvent(na);
+                                    if(pna != null){
+                                        Console.WriteLine("Terugweg ingepland");
+                                    }
     }
 }
