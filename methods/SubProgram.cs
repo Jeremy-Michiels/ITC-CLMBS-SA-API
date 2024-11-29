@@ -65,7 +65,7 @@ public class SubProgramma{
     
     
     //Methode die kijkt of er overlappende beschikbaarheden zijn
-    public static List<Availability> Availabilities(GetSchedule.Return ret, List<Compare> compareList, TimeSpan time){
+    public static List<Availability> Availabilities(GetSchedule.Return ret, List<Compare> compareList, TimeSpan time, TimeSpan tijdWeg){
         var users = ret.value.Select(x => x.scheduleId).Distinct().ToList();
         var availability = new List<Availability>();
         foreach(var item in compareList){
@@ -79,7 +79,8 @@ public class SubProgramma{
                 attendees = new List<string>(){
                     item.email
                 },
-                genoegTijd = item.eindTijd - item.startTijd >= time
+                genoegTijd = item.eindTijd - item.startTijd >= time,
+                genoegMetReistijd = item.eindTijd - item.startTijd >= time + tijdWeg
             };
             foreach(var user in users.Where(x => x != item.email)){
 
@@ -129,6 +130,7 @@ public class SubProgramma{
     //Methode die alle beschikbare en gedeeltelijk beschikbare tijden oplevert.
     public static Availability PrintAvailability(List<Availability> availability){
         int i = 1;
+        if(availability.Where(x => x.allAvailable == false).Count() > 0){
         Console.WriteLine("Semi beschikbare tijden");
         foreach(var ava in availability.Where(x => x.allAvailable == false)){
             Console.Write(i + ". " + ava.datum.ToString("d") + "   " + ava.startTijd + "-" + ava.eindTijd + "   Beschikbaar: " );
@@ -138,10 +140,12 @@ public class SubProgramma{
                     Console.Write(" + ");
                 }
             }
-            Console.WriteLine("         Genoeg tijd: " + (ava.genoegTijd ? "Ja" : "Nee"));
+            Console.WriteLine(" Genoeg tijd: " + (ava.genoegTijd ? "Ja" : "Nee") + "    Genoeg tijd met reistijd: " + (ava.genoegMetReistijd ? "Ja" : "Nee"));
             ava.id = i;
             i++;
         }
+        }
+        if(availability.Where(x => x.allAvailable && x.genoegTijd == false).Count() > 0){
         Console.WriteLine("");
         Console.WriteLine("Te korte tijden: ");
         foreach(var ava in availability.Where(x => x.allAvailable && x.genoegTijd == false)){
@@ -149,19 +153,32 @@ public class SubProgramma{
             ava.id = i;
             i++;
         }
+        }
 
-
-
-
-
-
+        if(availability.Where(x => x.allAvailable && x.genoegMetReistijd == false && x.genoegTijd == true).Count() > 0){
         Console.WriteLine("");
-        Console.WriteLine("Beschikbare tijden: ");
-        
-        foreach(var ava in availability.Where(x => x.allAvailable && x.genoegTijd)){
+        Console.WriteLine("Te kort met reistijd meegenomen");
+        foreach(var ava in availability.Where(x => x.allAvailable && x.genoegMetReistijd == false && x.genoegTijd == true)){
             Console.WriteLine(i + ". " + ava.datum.ToString("d") + "   " + ava.startTijd + "-" + ava.eindTijd);
             ava.id = i;
             i++;
+        }
+        }
+
+
+
+
+
+        if(availability.Where(x => x.allAvailable && x.genoegTijd && x.genoegMetReistijd).Count() > 0){
+        Console.WriteLine("");
+        Console.WriteLine("Beschikbare tijden: ");
+        
+        
+        foreach(var ava in availability.Where(x => x.allAvailable && x.genoegTijd && x.genoegMetReistijd)){
+            Console.WriteLine(i + ". " + ava.datum.ToString("d") + "   " + ava.startTijd + "-" + ava.eindTijd);
+            ava.id = i;
+            i++;
+        }
         }
         Console.WriteLine("");
         
@@ -300,58 +317,14 @@ public class SubProgramma{
     }
 
 
-    public static void PostEvent(string onderwerp, string body, misc.Availability gekozenTijdstip){
+    public static void PostEvent(string onderwerp, string body, misc.Availability gekozenTijdstip, bool online, string locatie){
 
         while(true){
             Console.WriteLine("Uitnodiging versturen? y/n");
             var ans = Console.ReadLine();
             if(ans == "y" || ans == "n"){
                 if(ans == "y"){
-                    var online = true;
-
-                    var locatie = "";
-                    while(true){
-                        Console.WriteLine("Meeting online? y/n");
-                        var ans2 = Console.ReadLine();
-                        if(ans2 == "y" || ans2 == "n"){
-                            if(ans2 == "y"){
-                                locatie = "Online";
-                                online = true;
-                            }
-                            else{
-                                online = false;
-                                while(true){
-                                    Console.WriteLine("Op welke locatie vind de meeting plaats?");
-                                    var ans3 = Console.ReadLine();
-                                    if(ans3 != "" && ans3 != null){
-                                        locatie = ans3;
-                                        break;
-                                    }
-                                    else{
-                                        Console.WriteLine("Voer een antwoord in");
-                                    }
-                                }
-                                    var tijdWeg = new TimeSpan();
-                                    while(true){
-                                        Console.WriteLine("Hoe lang is de Reistijd? uu:mm");
-                                        var reistijd = Console.ReadLine();
-                                        try{
-                                            tijdWeg = TimeSpan.Parse(reistijd);
-                                            break;
-                                        }
-                                        catch{
-                                            Console.WriteLine("Voer een geldig antwoord in");
-                                        }
-                                    }
-                                    //Reistijd in agenda zetten
-                                    PostTravelTime(gekozenTijdstip, tijdWeg, onderwerp, body);
-                            }
-                            break;
-                        }
-                        else{
-                            Console.WriteLine("Voer een geldig antwoord in");
-                        }
-                    }
+                    
                     
                     
                     //Data formatteren voor Outlook API

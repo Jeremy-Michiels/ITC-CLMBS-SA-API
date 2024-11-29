@@ -7,5 +7,6 @@ namespace misc{
         public List<string> attendees{get;set;}
         public bool allAvailable{get;set;} = false;
         public bool genoegTijd{get;set;}
+        public bool genoegMetReistijd{get;set;}
     }
 }

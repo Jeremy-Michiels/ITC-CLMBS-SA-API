@@ -67,9 +67,8 @@ namespace Programma{
                 ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time"),
                 ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time"),
                 ReturnItem.SendItem("busy", "2024-11-19T09:00:00.0000000", "2024-11-19T11:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T11:00:00.0000000", "2024-11-19T12:30:00.0000000", "W. Europe Standard Time"),
+                ReturnItem.SendItem("busy", "2024-11-19T11:00:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time"),
                 ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T14:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T15:30:00.0000000", "2024-11-19T16:00:00.0000000", "W. Europe Standard Time")
 
             },
             workingHours = new WorkingHours{
@@ -95,7 +94,7 @@ namespace Programma{
             availabilityView= "22222222222200002222222222220000",
             scheduleItems= new List<GetSchedule.ScheduleItem>(){
                     ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time"),
-                    ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T16:00:00.0000000", "W. Europe Standard Time")
+                    ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T15:30:00.0000000", "W. Europe Standard Time")
         },
         workingHours= new WorkingHours{
             daysOfWeek= new List<string>(){

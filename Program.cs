@@ -36,6 +36,56 @@ public class Program
         }
         
         }
+
+        var online = true;
+
+        var locatie = "";
+        var tijdWeg = new TimeSpan(0);
+                while(true){
+                        Console.WriteLine("Meeting online? y/n");
+                        var ans2 = Console.ReadLine();
+                        if(ans2 == "y" || ans2 == "n"){
+                            if(ans2 == "y"){
+                                locatie = "Online";
+                                online = true;
+                            }
+                            else{
+                                online = false;
+                                while(true){
+                                    Console.WriteLine("Op welke locatie vind de meeting plaats?");
+                                    var ans3 = Console.ReadLine();
+                                    if(ans3 != "" && ans3 != null){
+                                        locatie = ans3;
+                                        break;
+                                    }
+                                    else{
+                                        Console.WriteLine("Voer een antwoord in");
+                                    }
+                                }
+                                    
+                                    while(true){
+                                        Console.WriteLine("Hoe lang is de Reistijd? uu:mm");
+                                        var reistijd = Console.ReadLine();
+                                        try{
+                                            tijdWeg = TimeSpan.Parse(reistijd);
+                                            break;
+                                        }
+                                        catch{
+                                            Console.WriteLine("Voer een geldig antwoord in");
+                                        }
+                                    }
+                                    //Reistijd in agenda zetten
+
+
+
+                                    // PostTravelTime(gekozenTijdstip, tijdWeg, onderwerp, body);
+                            }
+                            break;
+                        }
+                        else{
+                            Console.WriteLine("Voer een geldig antwoord in");
+                        }
+                    }
         
 
 
@@ -49,7 +99,7 @@ public class Program
         var compareList = SubProgramma.FreeFromPlanning(ret);
 
         //Checken wie op dezelfde tijdstippen vrijgepland is
-        var availability = SubProgramma.Availabilities(ret, compareList, time);
+        var availability = SubProgramma.Availabilities(ret, compareList, time, tijdWeg);
 
         //Beschikbare tijdstippen printen, en keuze bevestigen
         var gekozenTijdstip = SubProgramma.PrintAvailability(availability);
@@ -58,7 +108,7 @@ public class Program
         Console.WriteLine(JsonSerializer.Serialize(gekozenTijdstip));
 
         //Event in agenda zetten en uitnodigingen sturen
-        SubProgramma.PostEvent(onderwerp, body, gekozenTijdstip);
+        SubProgramma.PostEvent(onderwerp, body, gekozenTijdstip, online, locatie);
         
         
         
