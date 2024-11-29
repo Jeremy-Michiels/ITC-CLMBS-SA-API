@@ -106,7 +106,6 @@ public class Program
 
         if(gekozenTijdstip.eindTijd - gekozenTijdstip.startTijd > time + (2 * tijdWeg)){
             gekozenTijdstip = SubProgramma.LongerThanPlanned(gekozenTijdstip, tijdWeg, time);
-            Console.ReadLine();
         }
 
         //Keuze uitprinten
