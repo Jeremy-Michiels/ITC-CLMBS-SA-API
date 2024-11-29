@@ -104,6 +104,11 @@ public class Program
         //Beschikbare tijdstippen printen, en keuze bevestigen
         var gekozenTijdstip = SubProgramma.PrintAvailability(availability);
 
+        if(gekozenTijdstip.eindTijd - gekozenTijdstip.startTijd > time + (2 * tijdWeg)){
+            gekozenTijdstip = SubProgramma.LongerThanPlanned(gekozenTijdstip, tijdWeg, time);
+            Console.ReadLine();
+        }
+
         //Keuze uitprinten
         Console.WriteLine(JsonSerializer.Serialize(gekozenTijdstip));
 

@@ -397,4 +397,33 @@ public class SubProgramma{
                                         Console.WriteLine("Terugweg ingepland");
                                     }
     }
+
+    public static misc.Availability LongerThanPlanned(misc.Availability gekozenTijdstip, TimeSpan tijdWeg, TimeSpan time){
+        var maxEndTime = gekozenTijdstip.eindTijd - tijdWeg;
+        var minStartTime = gekozenTijdstip.startTijd + tijdWeg;
+        var MaxStartTime = maxEndTime - time;
+        Console.WriteLine("Minimum starttijd: " + minStartTime);
+        Console.WriteLine("Maximum starttijd: " + MaxStartTime);
+        while(true){
+            Console.WriteLine("Kies een starttijdstip tussen deze twee tijdstippen in. uu:mm");
+            var tijdstip = Console.ReadLine();
+            try{
+                var tParse = TimeSpan.Parse(tijdstip);
+                if(tParse >= minStartTime && tParse <= MaxStartTime){
+                    gekozenTijdstip.startTijd = tParse;
+                    gekozenTijdstip.eindTijd = gekozenTijdstip.startTijd + time;
+                    return gekozenTijdstip;
+                    
+                }
+                else{
+                    throw new Exception();
+                }
+            }
+            catch{
+                Console.WriteLine("Voer een geldig tijdstip in");
+            }
+        }
+        
+        
+    }
 }
