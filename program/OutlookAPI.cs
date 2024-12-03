@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Flurl.Http;
 using Microsoft.Identity.Client;
 using misc;
@@ -11,28 +13,31 @@ namespace Programma{
         
 
         //Haalt een Bearer token op vanaf de Outlook API, die dient als de gebruiker.
-        public async static Task<string> GetBearerToken(){
+        public async static Task<AuthenticationResult> GetBearerToken(){
             var app = PublicClientApplicationBuilder.Create(Conf.clientId)
             .WithRedirectUri("http://localhost")
             .Build();
-        string[] scopes = 
-        {
-            "https://graph.microsoft.com/user.read"
-        };
+            Console.WriteLine("App Gemaakt");
+            string[] scopes = 
+            {
+                "https://graph.microsoft.com/user.read"
+            };
 
-        var tenantId = new Uri(Conf.tenantId);
+            var tenantId = new Uri(Conf.tenantId);
 
-        var bToken = await app.AcquireTokenInteractive(scopes)
-            .WithTenantIdFromAuthority(tenantId)
-            .ExecuteAsync();
+            var bToken = await app.AcquireTokenInteractive(scopes)
+                .WithTenantIdFromAuthority(tenantId)
+                .ExecuteAsync();
+            Console.WriteLine("Bearer token verkregen");
+            Console.WriteLine(bToken.AccessToken);
 
-            string json = await Flurl.Url.Parse("https://graph.microsoft.com/v1.0/me")
-                .WithOAuthBearerToken(bToken.AccessToken)
-                .GetStringAsync();
+                string json = await Flurl.Url.Parse("https://graph.microsoft.com/v1.0/me")
+                    .WithOAuthBearerToken(bToken.AccessToken)
+                    .GetStringAsync();
 
-        Console.WriteLine(json);
-        Console.Read();
-        return bToken.AccessToken;
+            Console.WriteLine(json);
+            Console.Read();
+            return bToken;
         }
 
 
@@ -40,7 +45,7 @@ namespace Programma{
 
 
         // Haalt alle meetinggegevens op van de personen die op zijn gegeven
-        public static GetSchedule.Return GetSchedule(GetSchedule.Post postItem){
+        public static GetSchedule.Return GetSchedules(GetSchedule.Post postItem){
             var ret = new GetSchedule.Return(){
                 odataContext = "https://graph.microsoft.com/v1.0/$metadata#users('f2e3093c-1e15-44b3-833d-e976b257e0c6')/messages",
                 value = new List<GetSchedule.RetItem>(){
@@ -148,6 +153,18 @@ namespace Programma{
 
 
     return ret;
+        }
+
+
+        public static async Task<GetSchedule.Return> GetScheduleWithAPI(GetSchedule.Post postItem, AuthenticationResult Bearer){
+            string json = await Flurl.Url.Parse("https://graph.microsoft.com/v1.0/me/calendar/getschedule")
+                    .WithOAuthBearerToken(Bearer.AccessToken)
+                    .WithHeader("Prefer", "outlook.timezone=" + (char)34 + "Pacific Standard Time"+ (char)34)
+                    .PostJsonAsync(postItem)
+                    .ReceiveString();
+            var item = JsonSerializer.Deserialize<GetSchedule.Return>(json);
+
+            return item;
         }
 
 
