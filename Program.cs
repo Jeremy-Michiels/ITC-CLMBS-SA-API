@@ -1,11 +1,18 @@
 ﻿using System.Text.Json;
 using Programma;
 using RegexExamples;
+using Microsoft.Identity.Client;
+using Flurl.Http;
 
 public class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
+
+
+        while(true){
+        // Main data verzamelen
+
         string activeEmail = "";
         while(true){
             Console.WriteLine("Wat is uw email?");
@@ -17,10 +24,14 @@ public class Program
                 Console.WriteLine("Vul een geldig emailadres in");
             }
         }
-        Console.WriteLine("Waarover gaat de meeting?");
+        Console.WriteLine("Welke workshop word er gegeven?");
         var onderwerp = Console.ReadLine();
+        Console.WriteLine("Welke processen worden er behandeld?");
+        var processen = Console.ReadLine();
         Console.WriteLine("Wat wilt u opsturen naar de uitgenodigden");
-        var body = Console.ReadLine();
+        var text = Console.ReadLine();
+
+        var body = text + "<br></br><br></br><b>Processen die worden behandeld: </b><br></br>" + processen;
 
         TimeSpan time = new TimeSpan();
         while(true){
@@ -74,11 +85,6 @@ public class Program
                                             Console.WriteLine("Voer een geldig antwoord in");
                                         }
                                     }
-                                    //Reistijd in agenda zetten
-
-
-
-                                    // PostTravelTime(gekozenTijdstip, tijdWeg, onderwerp, body);
                             }
                             break;
                         }
@@ -86,6 +92,9 @@ public class Program
                             Console.WriteLine("Voer een geldig antwoord in");
                         }
                     }
+
+
+
         
 
 
@@ -96,7 +105,7 @@ public class Program
         var ret = OutlookAPI.GetSchedule(postItem);
 
         //Uit de Outlook API data halen wie wanneer vrijgepland is
-        var compareList = SubProgramma.FreeFromPlanning(ret);
+        var compareList = SubProgramma.FreeFromPlanning(ret, postItem.StartTime.dateTime, postItem.EndTime.dateTime);
 
         //Checken wie op dezelfde tijdstippen vrijgepland is
         var availability = SubProgramma.Availabilities(ret, compareList, time, tijdWeg);
@@ -112,9 +121,34 @@ public class Program
         Console.WriteLine(JsonSerializer.Serialize(gekozenTijdstip));
 
         //Event in agenda zetten en uitnodigingen sturen
-        SubProgramma.PostEvent(onderwerp, body, gekozenTijdstip, online, locatie);
+        SubProgramma.PostEvent(onderwerp, body, gekozenTijdstip, online, locatie, tijdWeg);
+
+
+
         
         
-        
+        var bo = false;
+        while(true){
+            Console.WriteLine("Wilt u nog een workshop plannen? y/n");
+            var an = Console.ReadLine();
+            if(an != "y" && an != "n"){
+                if(an == "y"){
+                    bo = true;
+                    
+                }
+                else{
+                    bo = false;
+                }
+                break;
+                
+            }
+            else{
+                Console.WriteLine("Verkeerde input, probeer opniew");
+            }
+        }
+        if(bo == false){
+            break;
+        }
+        }
     }
 }

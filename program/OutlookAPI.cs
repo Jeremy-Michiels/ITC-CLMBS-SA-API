@@ -1,3 +1,5 @@
+using Flurl.Http;
+using Microsoft.Identity.Client;
 using misc;
 
 namespace Programma{
@@ -6,6 +8,37 @@ namespace Programma{
     public class OutlookAPI{
 
         // Doet GetSchedule functie van Outlook na
+        
+
+        //Haalt een Bearer token op vanaf de Outlook API, die dient als de gebruiker.
+        public async static Task<string> GetBearerToken(){
+            var app = PublicClientApplicationBuilder.Create(Conf.clientId)
+            .WithRedirectUri("http://localhost")
+            .Build();
+        string[] scopes = 
+        {
+            "https://graph.microsoft.com/user.read"
+        };
+
+        var tenantId = new Uri(Conf.tenantId);
+
+        var bToken = await app.AcquireTokenInteractive(scopes)
+            .WithTenantIdFromAuthority(tenantId)
+            .ExecuteAsync();
+
+            string json = await Flurl.Url.Parse("https://graph.microsoft.com/v1.0/me")
+                .WithOAuthBearerToken(bToken.AccessToken)
+                .GetStringAsync();
+
+        Console.WriteLine(json);
+        Console.Read();
+        return bToken.AccessToken;
+        }
+
+
+
+
+
         // Haalt alle meetinggegevens op van de personen die op zijn gegeven
         public static GetSchedule.Return GetSchedule(GetSchedule.Post postItem){
             var ret = new GetSchedule.Return(){
@@ -64,11 +97,11 @@ namespace Programma{
             scheduleId = "erwin.oenema@silverant.nl",
             availabilityView = "22222222222222002222000000220000",
             scheduleItems = new List<GetSchedule.ScheduleItem>(){
-                ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T09:00:00.0000000", "2024-11-19T11:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T11:00:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time"),
-                ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T14:00:00.0000000", "W. Europe Standard Time"),
+                ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
+                ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T09:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
+                ReturnItem.SendItem("busy", "2024-11-19T09:00:00.0000000", "2024-11-19T11:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
+                ReturnItem.SendItem("busy", "2024-11-19T11:00:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
+                ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T14:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
 
             },
             workingHours = new WorkingHours{
@@ -93,8 +126,8 @@ namespace Programma{
             scheduleId= "jacco.schonewille@clmbs.nl",
             availabilityView= "22222222222200002222222222220000",
             scheduleItems= new List<GetSchedule.ScheduleItem>(){
-                    ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time"),
-                    ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T15:30:00.0000000", "W. Europe Standard Time")
+                    ReturnItem.SendItem("busy", "2024-11-19T08:30:00.0000000", "2024-11-19T12:00:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime),
+                    ReturnItem.SendItem("busy", "2024-11-19T13:00:00.0000000", "2024-11-19T15:30:00.0000000", "W. Europe Standard Time", postItem.StartTime.dateTime, postItem.EndTime.dateTime)
         },
         workingHours= new WorkingHours{
             daysOfWeek= new List<string>(){
@@ -112,6 +145,8 @@ namespace Programma{
         }
             });
         }
+
+
     return ret;
         }
 

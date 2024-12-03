@@ -6,9 +6,19 @@ public class SubProgramma{
 
 
     //Methode die alle beschikbare tijden van de verschillende mensen opstelt
-    public static List<Compare> FreeFromPlanning(GetSchedule.Return ret){
+    public static List<Compare> FreeFromPlanning(GetSchedule.Return ret, DateTime startDate, DateTime endDate){
         var compareList = new List<Compare>();
-        var disDates = ret.value.Select(x => x.scheduleItems.Select(x => x.start.dateTime.Date).Distinct().ToList()).OrderByDescending(y => y.Count()).FirstOrDefault();
+        var disDates = new List<DateTime>();
+        disDates.Add(startDate);
+        var btw = startDate.AddDays(1);
+        while(btw.Date > endDate.Date){
+            disDates.Add(btw);
+            btw = btw.AddDays(1);
+        }
+        if(startDate.Date != endDate.Date){
+            disDates.Add(endDate);
+        }
+        // var disDates = ret.value.Select(x => x.scheduleItems.Select(x => x.start.dateTime.Date).Distinct().ToList()).OrderByDescending(y => y.Count()).FirstOrDefault();
         foreach(var item in ret.value){
             Console.WriteLine("Beschikbaarheid "+ item.scheduleId + ":");
             if(item.scheduleItems.Count() < 1){
@@ -317,7 +327,7 @@ public class SubProgramma{
     }
 
 
-    public static void PostEvent(string onderwerp, string body, misc.Availability gekozenTijdstip, bool online, string locatie){
+    public static void PostEvent(string onderwerp, string body, misc.Availability gekozenTijdstip, bool online, string locatie, TimeSpan tijdWeg){
 
         while(true){
             Console.WriteLine("Uitnodiging versturen? y/n");
@@ -329,6 +339,7 @@ public class SubProgramma{
                     
                     //Data formatteren voor Outlook API
                     var pEvent = SubProgramma.PItem(gekozenTijdstip, onderwerp, body, online, locatie, "busy");
+                    PostTravelTime(gekozenTijdstip, tijdWeg , onderwerp, body);
                     var postEvent = OutlookAPI.PostEvent(pEvent);
                     if(postEvent == null){
                         Console.WriteLine("Onbekende fout, probeer later opnieuw.");
@@ -349,7 +360,6 @@ public class SubProgramma{
                         Console.WriteLine("Locatie: " + postEvent.location.displayName);
                         Console.WriteLine("Startdatum: " + postEvent.start.dateTime);
                         Console.WriteLine("Einddatum: " + postEvent.end.dateTime);
-                        Console.ReadLine();
                     }
                 }
                 else{

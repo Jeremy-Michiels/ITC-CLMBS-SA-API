@@ -17,7 +17,8 @@ namespace Programma{
                             eindTijd = eindtijd,
                         };
         }
-        public static ScheduleItem SendItem(string status, string datetimeStart, string dateTimeEnd, string timeZone){
+        public static ScheduleItem SendItem(string status, string datetimeStart, string dateTimeEnd, string timeZone, DateTime stDate, DateTime enDate){
+            if((DateTime.Parse(datetimeStart) < stDate && DateTime.Parse(dateTimeEnd) > stDate) || (DateTime.Parse(datetimeStart) < enDate && DateTime.Parse(dateTimeEnd) > enDate) || (DateTime.Parse(datetimeStart) > stDate && DateTime.Parse(dateTimeEnd) < enDate) || (DateTime.Parse(datetimeStart) < stDate && DateTime.Parse(dateTimeEnd) > enDate)){
             return new ScheduleItem{
                             status= status,
                             start= new DateTimeTimeZone{
@@ -29,6 +30,10 @@ namespace Programma{
                                 timeZone= timeZone
                             }
                         };
+        }
+        else{
+            return new ScheduleItem{};
+        }
         }
     }
 }
